@@ -94,7 +94,7 @@ def _maybe_convert_set(input_tsv, audio_dir, label_filter, space_after_every_cha
             counter['total_time'] += frames
 
     print("Importing mp3 files...")
-    pool = Pool(cpu_count())
+    pool = Pool(cpu_count()*8)
     bar = progressbar.ProgressBar(max_value=num_samples, widgets=SIMPLE_BAR)
     for i, _ in enumerate(pool.imap_unordered(one_sample, samples), start=1):
         bar.update(i)
