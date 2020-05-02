@@ -1,6 +1,6 @@
 build:
   template_file: swig-linux-opt-base.tyml
-  docker_image: "ubuntu:14.04"
+  docker_image: "ubuntu:16.04"
   swig_system: "linux"
   swig_arch: "amd64"
   system_setup:

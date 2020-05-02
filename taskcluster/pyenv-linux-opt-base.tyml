@@ -26,8 +26,7 @@ then:
           extraSystemSetup: { $eval: strip(str(build.system_setup)) }
           taskIndexExpire: { $fromNow: '6 months' }
         in: >
-          (apt-get -qq -y remove --purge ubuntu-advantage-tools || true) &&
-          apt-get -qq update && apt-get -qq -y install curl git;
+          apt-get -qq update && apt-get -qq -y install curl git sudo;
           swig_bin=`curl -sSIL -o /dev/null -w "%{http_code}" ${system.pyenv.linux.url}` &&
           if [ "$swig_bin" != "200" ]; then
             ${extraSystemSetup} &&

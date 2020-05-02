@@ -26,7 +26,6 @@ then:
           extraSystemSetup: { $eval: strip(str(build.system_setup)) }
           taskIndexExpire: { $fromNow: '6 months' }
         in: >
-          (apt-get -qq -y remove --purge ubuntu-advantage-tools || true) &&
           apt-get -qq update && apt-get -qq -y install curl git && ${extraSystemSetup};
           cache_file=`curl -sSIL -o /dev/null -w "%{http_code}" ${build.cache.url}` &&
           if [ "$cache_file" != "200" ]; then
