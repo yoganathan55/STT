@@ -1,6 +1,6 @@
 # Need devel version cause we need /usr/include/cudnn.h 
 # for compiling libctc_decoder_with_kenlm.so
-FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
+FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu18.04
 
 
 # >> START Install base software
@@ -43,15 +43,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN ln -s -f /usr/bin/python3 /usr/bin/python
 
-# Install NCCL 2.2
-RUN apt-get --no-install-recommends install -qq -y --allow-downgrades --allow-change-held-packages libnccl2=2.3.7-1+cuda10.0 libnccl-dev=2.3.7-1+cuda10.0
-
 # Install Bazel
-RUN curl -LO "https://github.com/bazelbuild/bazel/releases/download/0.24.1/bazel_0.24.1-linux-x86_64.deb"
+RUN curl -LO "https://github.com/bazelbuild/bazel/releases/download/2.0.0/bazel_2.0.0-linux-x86_64.deb"
 RUN dpkg -i bazel_*.deb
 
 # Install CUDA CLI Tools
-RUN apt-get --no-install-recommends install -qq -y cuda-command-line-tools-10-0
+RUN apt-get --no-install-recommends install -qq -y cuda-command-line-tools-10-1
 
 # Install pip
 RUN wget https://bootstrap.pypa.io/get-pip.py && \
@@ -68,16 +65,18 @@ RUN wget https://bootstrap.pypa.io/get-pip.py && \
 # Clone TensorFlow from Mozilla repo
 RUN git clone https://github.com/mozilla/tensorflow/
 WORKDIR /tensorflow
-RUN git checkout r1.15
+RUN git checkout r2.2
 
 
 # GPU Environment Setup
+ENV TF_NEED_ROCM 0
+ENV TF_NEED_OPENCL_SYCL 0
+ENV TF_NEED_OPENCL 0
 ENV TF_NEED_CUDA 1
-ENV TF_CUDA_PATHS "/usr/local/cuda,/usr/lib/x86_64-linux-gnu/"
-ENV TF_CUDA_VERSION 10.0
+ENV TF_CUDA_PATHS "/usr/include,/usr/local/cuda-10.1,/usr/lib/x86_64-linux-gnu/"
+ENV TF_CUDA_VERSION 10.1
 ENV TF_CUDNN_VERSION 7
 ENV TF_CUDA_COMPUTE_CAPABILITIES 6.0
-ENV TF_NCCL_VERSION 2.3
 
 # Common Environment Setup
 ENV TF_BUILD_CONTAINER_TYPE GPU
@@ -105,8 +104,9 @@ ENV TF_NEED_TENSORRT 0
 ENV TF_NEED_GDR 0
 ENV TF_NEED_VERBS 0
 ENV TF_NEED_OPENCL_SYCL 0
+
 ENV PYTHON_BIN_PATH /usr/bin/python3.6
-ENV PYTHON_LIB_PATH /usr/lib/python3.6/dist-packages
+ENV PYTHON_LIB_PATH /usr/local/lib/python3.6/dist-packages
 
 # << END Configure Tensorflow Build
 
@@ -125,11 +125,11 @@ RUN echo "build --spawn_strategy=standalone --genrule_strategy=standalone" \
     >>/etc/bazel.bazelrc
 
 # Put cuda libraries to where they are expected to be
-RUN mkdir /usr/local/cuda/lib &&  \
-    ln -s /usr/lib/x86_64-linux-gnu/libnccl.so.2 /usr/local/cuda/lib/libnccl.so.2 && \
-    ln -s /usr/include/nccl.h /usr/local/cuda/include/nccl.h && \
-    ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1 && \
-    ln -s /usr/include/cudnn.h /usr/local/cuda/include/cudnn.h
+##RUN mkdir /usr/local/cuda/lib &&  \
+##    ln -s /usr/lib/x86_64-linux-gnu/libnccl.so.2 /usr/local/cuda/lib/libnccl.so.2 && \
+##    ln -s /usr/include/nccl.h /usr/local/cuda/include/nccl.h && \
+##    ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1 && \
+##    ln -s /usr/include/cudnn.h /usr/local/cuda/include/cudnn.h
 
 
 # Set library paths
