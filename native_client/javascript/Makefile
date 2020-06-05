@@ -24,7 +24,7 @@ endif
 default: build
 
 clean:
-	rm -f deepspeech_wrap.cxx package.json package-lock.json
+	rm -f package.json package-lock.json
 	rm -rf ./build/
 
 clean-npm-pack:
@@ -43,11 +43,11 @@ package.json: package.json.in
 npm-dev: package.json
 	$(NPM_TOOL) install --prefix=$(NPM_ROOT)/../ --ignore-scripts --force --verbose --production=false .
 
-configure: deepspeech_wrap.cxx package.json npm-dev
-	PATH="$(NODE_MODULES_BIN):${PATH}" $(NODE_BUILD_TOOL) configure $(NODE_BUILD_VERBOSE)
+configure: package.json npm-dev
+	PATH="$(NODE_MODULES_BIN):${PATH}" $(NODE_BUILD_TOOL) $(NODE_PLATFORM_TARGET) $(NODE_RUNTIME) $(NODE_DIST_URL) --debug configure $(NODE_BUILD_VERBOSE)
 
-build: configure deepspeech_wrap.cxx
-	PATH="$(NODE_MODULES_BIN):${PATH}" AS=$(AS) CC=$(CC) CXX=$(CXX) LD=$(LD) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS)" LDFLAGS="$(RPATH_NODEJS) $(LDFLAGS)" LIBS=$(LIBS) $(NODE_BUILD_TOOL) $(NODE_PLATFORM_TARGET) $(NODE_RUNTIME) $(NODE_ABI_TARGET) $(NODE_DIST_URL) --no-color rebuild $(NODE_BUILD_VERBOSE)
+build: configure
+	PATH="$(NODE_MODULES_BIN):${PATH}" AS=$(AS) CC=$(CC) CXX=$(CXX) LD=$(LD) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS)" LDFLAGS="$(RPATH_NODEJS) $(LDFLAGS)" LIBS=$(LIBS) $(NODE_BUILD_TOOL) $(NODE_PLATFORM_TARGET) $(NODE_RUNTIME) $(NODE_DIST_URL) --no-color --debug rebuild $(NODE_BUILD_VERBOSE)
 
 copy-deps: build
 	$(call copy_missing_libs,lib/binding/*/*/*/deepspeech.node,lib/binding/*/*/)
@@ -57,6 +57,3 @@ node-wrapper: copy-deps build
 
 npm-pack: clean package.json index.ts npm-dev
 	PATH="$(NODE_MODULES_BIN):${PATH}" tsc && $(NPM_TOOL) pack $(NODE_BUILD_VERBOSE)
-
-deepspeech_wrap.cxx: deepspeech.i ds-swig
-	$(DS_SWIG_ENV) swig -c++ -javascript -node deepspeech.i

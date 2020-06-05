@@ -26,10 +26,15 @@
     },
     "binary": {
         "module_name" : "deepspeech",
-        "module_path" : "./lib/binding/v{version}/{platform}-{arch}/{node_abi}/",
-        "remote_path" : "./v{version}/{configuration}/",
-        "package_name": "{module_name}-v{version}-{node_abi}-{platform}-{arch}.tar.gz",
-        "host"        : "https://community-tc.services.mozilla.com/api/index/v1/task/project.deepspeech.tensorflow.pip.v1.0.0-warpctc.arm/artifacts/public/"
+        "module_path" : "./lib/binding/v{version}/{platform}-{arch}/{node_napi_label}/",
+        "package_name": "{module_name}-v{version}-{napi_build_version}-{platform}-{arch}.tar.gz",
+        "host": "~",
+        "napi_versions": [
+            3
+        ],
+        "napi_build_versions": [
+            3
+        ]
     },
     "dependencies"  : {
       "node-pre-gyp": "0.15.x",
@@ -40,7 +45,8 @@
     },
     "devDependencies": {
       "electron": "^1.7.9",
-      "node-gyp": "4.x - 5.x",
+      "node-gyp": "5.x",
+      "node-addon-api": "3.0.x",
       "typescript": "3.8.x",
       "typedoc": "0.17.x",
       "@types/argparse": "1.0.x",
