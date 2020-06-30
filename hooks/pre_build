@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e # Exit immediately if a command exits with a non-zero status.
+set -u # Treat unset variables as an error.
+
+DOCKERFILE_TARGET=$(echo ${DOCKERFILE_PATH} | sed -e 's/\.tmpl//g')
+make DEEPSPEECH_REPO=${SOURCE_REPOSITORY_URL} DEEPSPEECH_SHA=${SOURCE_COMMIT} ${DOCKERFILE_TARGET}
+cp ${DOCKERFILE_TARGET} ${DOCKERFILE_PATH}
+echo "----8<----8<----8<----8<----8<----8<----8<----8<----8<----8<----8<----8<----"
+cat ${DOCKERFILE_PATH}
+echo "----8<----8<----8<----8<----8<----8<----8<----8<----8<----8<----8<----8<----"

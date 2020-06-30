@@ -6,6 +6,8 @@ FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu18.04
 ENV DEEPSPEECH_REPO=#DEEPSPEECH_REPO#
 ENV DEEPSPEECH_SHA=#DEEPSPEECH_SHA#
 
+RUN env
+
 # >> START Install base software
 
 # Get basic packages
